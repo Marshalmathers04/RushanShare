@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Rushanshare</title>
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="../css/main.css?v=2">
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+</head>
+<body>	
+
+	<section id="home" class="page active __container">
+	</section>
+	 <section id="mapsec" class="page __container">
+		<div id="map">
+	</section>
+	<section id="add" class="page __container">
+		<div class="upload-container">
+			<form class="addPost-form" action="/addpost" method="post" enctype="multipart/form-data">
+				<input name="caption" type="text" id="postCaption">
+				<input name="imageFile" type="file" id="postFile">
+				<button id="openCoordMap" type="button" class="coordMap-btn">Open Map</button>
+				<input type="submit">
+			</form>
+			<div  class="selectCoords-container">
+				<input type="search">
+				<div class="coordsMap" id="coordsMap"></div>
+				<button id="openCoordMap" type="button" class="coordMap-btn">Close Map</button>
+				<select>
+					<option>mogger</option>
+					<option>nigger</option>
+					<option>trigger</option>
+					<option>clicker</option>
+					<option>clanker</option>
+					<option>fucker</option>
+					<option>nicker</option>
+					<option>setter</option>
+					<option>plucker</option>
+					<option>knitter</option>
+					<option>bitter</option>
+					<option>knotter</option>
+				</select>
+				<div id="uploadMap"></div>
+			</div>
+			
+		</div>
+	</section>
+	<section id="profile" class="page __container"></section>
+<nav id="bottom-nav">
+  <button data-target="home" class="button active"><i class="fas fa-home"></i>Home</button>
+  <button data-target="mapsec" class="button"><i class="fas fa-map"></i>Map</button>
+  <button data-target="add" class="button"><i class="fas fa-plus-circle"></i>Add</button>
+  <button data-target="profile" class="button"><i class="fas fa-user"></i>Profile</button>
+</nav>
+
+</body>
+
+<script>
+
+	const openMapBtn = document.querySelectorAll(".coordMap-btn")
+	const coordMap = document.querySelector(".selectCoords-container")
+	openMapBtn.forEach(btn=>{
+		btn.addEventListener("click",()=>{
+		coordMap.classList.toggle("selectCoords-container__active")
+	})})
+
+
+
+
+	const postsContainer = document.getElementById("home")
+	async function getPosts(){
+		const posts = await fetch("/api/feed")
+		.then(res=>res.json())
+		.then(data=>{
+			console.log("niger",data)
+			data.posts.forEach(post=>{
+				postsContainer.insertAdjacentHTML("beforeend",`
+		<div class="post-container">
+			<h1 class="post-username">${post.userId}</h1>
+			<div class="post-image-container">
+				
+				<img class="post-image" src="${post.imagePathname}">
+			</div>
+			<h1 class="post-caption">${post.caption}</h1>
+			<div class="post-reactions-container">
+				<button class="post-button-like">
+					<i class="fa-regular fa-heart"></i>
+				</button>
+			</div>
+		</div>`)
+			})
+		})
+	const likebuttons = document.querySelectorAll(".post-button-like")
+	likebuttons.forEach(btn=>{
+		
+		btn.addEventListener("click",(e)=>{
+			const likeIcon = btn.querySelector("i")
+				
+			
+			
+			likeIcon.classList.toggle("fa-solid")
+		})
+	})
+	}
+	getPosts()
+
+
+	const buttons = document.querySelectorAll("#bottom-nav button")
+	const pages = document.querySelectorAll(".page")
+	buttons.forEach(btn=>{
+		btn.onclick = () =>{
+			pages.forEach(page=>{
+				page.classList.remove("active")
+			})
+			document.getElementById(btn.dataset.target).classList.add("active")
+			if (btn.dataset.target==="mapsec"){
+				map.invalidateSize()
+			}
+			buttons.forEach(b=>{
+				b.classList.remove("active")
+			})
+			btn.classList.add("active")
+		}
+	})
+	const colors = [
+	  "#e41a1c",
+	  "#377eb8",
+	  "#4daf4a",
+	  "#984ea3",
+	  "#ff7f00",
+	  "#ffff33",
+	  "#a65628"
+	];
+	let currentColorIndex=-1
+	function getColor(){	
+		if(currentColorIndex>=colors.length-1){
+			return {fillColor:'#000'}
+		
+		}
+		console.log("color changed")
+		currentColorIndex+=1
+		return {fillColor:colors[currentColorIndex]}
+		
+	}
+	var uploadMap = L.map("uploadMap").setView([37.9408, 71.5605],13)
+	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+		maxZoom:19	
+	}).addTo(uploadMap)
+
+	var map = L.map('map').setView([37.9408, 71.5605],13)
+
+	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	    maxZoom: 19
+	}).addTo(map);
+	fetch("../geojson/gbao.geojson")
+	.then(res=>res.json())
+	.then(data=>{
+		L.geoJson(data, {style:(feature)=>{return getColor()}},{
+  onEachFeature: (feature, layer) => {
+    const name = feature.properties.shapeName;
+    if (name) {
+      const center = layer.getBounds().getCenter();
+      L.marker(center, { 
+        icon: L.divIcon({
+          className: 'polygon-label',
+          html: name,
+          iconSize: null
+        })
+      }).addTo(map);
+    }
+  }
+}).addTo(map);
+
+	})	
+
+</script>
+
+</html>
+

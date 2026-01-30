@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Phone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 1rem;
+    }
+
+    .verify-card {
+      background: #fff;
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .verify-card h2 {
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-size: 1.5rem;
+    }
+
+    .verify-card p {
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .verify-card input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 1.2rem;
+      text-align: center;
+      letter-spacing: 0.4rem;
+    }
+
+    .verify-card input:focus {
+      border-color: #667eea;
+    }
+
+    .verify-card button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 6px;
+      background: #667eea;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      margin-top: 0.5rem;
+    }
+
+    .verify-card button:hover {
+      background: #556cd6;
+    }
+
+    .telegram-btn {
+      background: #0088cc;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .telegram-btn:hover {
+      background: #006699;
+    }
+
+    .error-text {
+  color: #ff4d4f; /* a nice red */
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+  min-height: 1.2em; /* keeps space even when empty */
+}
+
+
+    @media (max-width: 480px) {
+      .verify-card {
+        padding: 1.5rem;
+      }
+
+      .verify-card h2 {
+        font-size: 1.3rem;
+      }
+
+      .verify-card input,
+      .verify-card button {
+        padding: 0.65rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="verify-card">
+    <h2>Verify Phone</h2>
+    <p>Enter the 6-digit code sent to your phone</p>
+    <form method="POST">
+      <input
+	id="verificationcode"
+        type="text"
+        name="code"
+        maxlength="6"
+        pattern="\d{6}"
+        placeholder="••••••"
+        required
+      />
+
+       <p id="error-msg" class="error-text"></p>
+
+      <button type="submit">Verify</button>
+    </form>
+    <button class="telegram-btn" onclick="window.location.href='https://t.me/YourBotUsername'">
+      Go to Telegram Bot
+    </button>
+  </div>
+<script src="../script/verifycode.js"></script>
+</body>
+</html>
+
