@@ -22,6 +22,16 @@ router.get("/api/feed", async (req,res)=>{
 			console.log(err)
 		}
 })
+router.get("/api/user",async(req,res)=>{
+	if (!req.session.userId){
+		return res.redirect("/login")
+	}
 
+	const user = await User.findOne({_id:req.session.userId},{username:1,phone:1,_id:0})
+	if (!user){
+		return res.json({err:"Unfortunately the server is having problems with the user data right now"})
+	}
+	res.status(200).json(user)
+})
 
 module.exports = router

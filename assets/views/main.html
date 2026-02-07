@@ -29,32 +29,28 @@
 				<input name="caption" type="text" id="postCaption">
 				<input name="imageFile" type="file" id="postFile">
 				<button id="openCoordMap" type="button" class="coordMap-btn">Open Map</button>
+				<input id="uploadCoordinates" type="hidden" name="coordinates">
 				<input type="submit">
 			</form>
 			<div  class="selectCoords-container">
-				<input type="search">
+					
+				<button id="closeCoordMap" type="button" class="coordMap-btn"><i class="fa-solid fa-x"></i></button>
+				<div class="search-container">
+					<div id="uploadSearch" class="uploadSearch-suggestions-container"></div>			
+					<input type="search" placeholder="Region or Town" id="searchPlaces">
+				</div>
+					
+				
 				<div class="coordsMap" id="coordsMap"></div>
-				<button id="openCoordMap" type="button" class="coordMap-btn">Close Map</button>
-				<select>
-					<option>mogger</option>
-					<option>nigger</option>
-					<option>trigger</option>
-					<option>clicker</option>
-					<option>clanker</option>
-					<option>fucker</option>
-					<option>nicker</option>
-					<option>setter</option>
-					<option>plucker</option>
-					<option>knitter</option>
-					<option>bitter</option>
-					<option>knotter</option>
-				</select>
 				<div id="uploadMap"></div>
 			</div>
 			
 		</div>
 	</section>
-	<section id="profile" class="page __container"></section>
+	<section id="profile" class="page __container">
+		<div class="userInfo-container">
+		</div>
+	</section>
 <nav id="bottom-nav">
   <button data-target="home" class="button active"><i class="fas fa-home"></i>Home</button>
   <button data-target="mapsec" class="button"><i class="fas fa-map"></i>Map</button>
@@ -66,17 +62,116 @@
 
 <script>
 
-	const openMapBtn = document.querySelectorAll(".coordMap-btn")
+
+
+
+
+
+
+
+
+
+	const GBAO = [
+  {
+    "name": "Khorugh",
+    "latitude": 37.4904,
+    "longitude": 71.5534,
+    "notes": "Capital of GBAO" 
+  },
+  {
+    "name": "Ishkoshim",
+    "latitude": 36.72722,
+    "longitude": 71.61167,
+    "notes": "Border town on the Panj River"
+  },
+  {
+    "name": "Murghob",
+    "latitude": 38.17023,
+    "longitude": 73.96674,
+    "notes": "Major town in eastern GBAO"
+  },
+  {
+    "name": "Rushon",
+    "latitude": 37.94487,
+    "longitude": 71.55745,
+    "notes": "Seat of Rushon District"
+  },
+  {
+    "name": "Vanj",
+    "latitude": 38.3705,
+    "longitude": 71.4532,
+    "notes": "Seat of Vanj District"
+  },
+  {
+    "name": "Roshtqal'a",
+    "latitude": 37.267,
+    "longitude": 71.82,
+    "notes": "Seat of Roshtqal'a District"
+  },
+  {
+    "name": "Qal'ai Khumb",
+    "latitude": 38.45413,
+    "longitude": 70.78864,
+    "notes": "Border town in Darvoz District"
+  },
+  {
+    "name": "Alichur",
+    "latitude": null,
+    "longitude": null,
+    "notes": "Village in Murghob District (coordinates not widely published)"
+  }
+]
+
+	const suggestionCont = document.getElementById("uploadSearch")
+	const searchTown = document.getElementById("searchPlaces")
+	searchTown.addEventListener("input",(e)=>{
+		suggestionCont.innerHTML=""
+		for (let i = 0;i<GBAO.length;i++){
+			if (GBAO[i].name.toLowerCase().includes(searchTown.value.toLowerCase())&&searchTown.value!==""){
+				suggestionCont.insertAdjacentHTML("beforeend",`<div class="uploadSearch-suggestion" data-slug-coords="[${GBAO[i].latitude},${GBAO[i].longitude}]">
+						<p>${GBAO[i].name}</p>
+					</div>`)
+			}
+	const uploadSlugs = document.querySelectorAll(".uploadSearch-suggestion")
+	uploadSlugs.forEach(slug=>{
+		slug.addEventListener("click",()=>{
+			suggestionCont.innerHTML=""
+			console.log(slug.dataset.slugCoords[0])
+			uploadMap.flyTo(JSON.parse(slug.dataset.slugCoords),12) })
+	})
+		}
+	})
+
+
+
+	const openMapBtn = document.getElementById("openCoordMap")
+	const closeMapBtn = document.getElementById("closeCoordMap")
 	const coordMap = document.querySelector(".selectCoords-container")
-	openMapBtn.forEach(btn=>{
-		btn.addEventListener("click",()=>{
-		coordMap.classList.toggle("selectCoords-container__active")
-	})})
+
+	openMapBtn.addEventListener("click",()=>{
+                uploadMap.invalidateSize()
+                coordMap.classList.toggle("selectCoords-container__active")
+        })
+	closeMapBtn.addEventListener("click",()=>{
+                uploadMap.invalidateSize()
+                coordMap.classList.toggle("selectCoords-container__active")
+        })
 
 
-
+	let coordinatesInput = document.getElementById("uploadCoordinates")
 
 	const postsContainer = document.getElementById("home")
+	const user = fetch("/api/user")
+		.then(res=>res.json())
+		.then(data=>{
+			const profileContainer = document.querySelector(".userInfo-container")
+			profileContainer.insertAdjacentHTML("beforeend",`
+				<img class="userInfo-profilePic">
+				<p class="userInfo-userName">${data.username}</p>
+				<p class="userInfo-userNum">${data.phone}</p>
+	
+			`)	
+		})
 	async function getPosts(){
 		const posts = await fetch("/api/feed")
 		.then(res=>res.json())
@@ -179,9 +274,19 @@
     }
   }
 }).addTo(map);
+	
+	L.geoJson(data, {style:(feature)=>{return getColor()}}).addTo(uploadMap);
+
 
 	})	
-
+	var uploadGroup = L.layerGroup().addTo(uploadMap)
+	uploadMap.on("click",(e)=>{
+		uploadGroup.clearLayers()
+		let lat = e.latlng.lat
+		let lng = e.latlng.lng
+		coordinatesInput.value = `[${[lat,lng]}]`
+		L.marker([lat,lng]).addTo(uploadGroup)
+	})
 </script>
 
 </html>

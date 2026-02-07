@@ -121,7 +121,7 @@ router.post("/addpost",upload.single('imageFile'),async (req,res)=>{
 	}
 	const caption = req.body.caption
 	const file = req.file.filename
-	const post = await Post.insertOne({caption,userId:req.session.userId,imagePathname:`images/fullquality/${file}`})
+	const post = await Post.insertOne({caption,userId:req.session.userId,imagePathname:`images/fullquality/${file}`,coordinates:JSON.parse(req.body.coordinates)})
 	res.redirect("/main")
 })
 

@@ -31,7 +31,7 @@ const store = MongoStore.create({
 
 app.use(express.urlencoded({extended:true}))
 app.use(session({
-  secret: 'nigga',
+  secret: 'b9f3d8a7c6e2f1a4d5b8e9c2f7a1d3b0e4c6f8a2d1b7c5e9f0a3d2b6c8e1f4a7',
   resave: false, 
   saveUninitialized: true, 
 	store:store,

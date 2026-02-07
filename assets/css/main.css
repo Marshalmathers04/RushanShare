@@ -70,6 +70,17 @@ body{
 #add{
 	overflow:hidden;
 }
+
+
+
+
+
+
+
+.addPost-form{
+	display:flex;
+	flex-direction:column;
+}
 .upload-container{
 	background-color:green;
 	height:100dvh;
@@ -94,8 +105,14 @@ body{
 	transition:transform 300ms;
 	transform:translate(0,0);
 }
-.coordMap-btn{
-	background:red;
+#closeCoordMap{
+	position:absolute;
+	z-index:1000;
+	top:10px;
+	right:10px;
+}
+.coordsMap-btn__active{	
+	display:none;
 }
 #uploadMap{
 	height:100%;
@@ -115,6 +132,41 @@ body{
 	width:100%;
 	height:auto;	
 }
+.coordsMap{
+}
 
+
+.search-container{
+	width:100%;
+	position:fixed;
+	bottom:64px;
+	z-index:1000;
+	background-color:black;
+}
+.search-container input{
+	width:100%;
+	height:40px;
+	border-radius:20px;
+	padding:0 10px;
+
+}
+.uploadSearch-suggestions-container{
+	display:flex;
+	flex-direction:column;
+	margin-bottom:10px;
+}
+.uploadSearch-suggestion{
+	width:100%;
+	height:30px;
+	background-color:black;
+	color:white;
+
+}
+.uploadSearch-suggestion:hover{
+	background-color:white;
+}
+.uploadSearch-suggestion p{
+	line-height:0;
+}
 @media (min-width:320px){
 }
